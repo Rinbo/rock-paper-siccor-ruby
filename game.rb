@@ -6,7 +6,7 @@ class Game
     initizalize_player
     get_referee_matrix
     select_opponent
-    start_game    
+    start_game       
   end
 
   def start_game
@@ -15,9 +15,11 @@ class Game
     puts "Game starts in "
     countdown(3)
     while (@number_of_sets < 10) do
-      player_choice = present_choices
-      puts player_choice
-      @number_of_sets += 1   
+      player_choice = get_player_choice
+      opponent_choice = get_opponent_choice
+      print_result(player_choice, opponent_choice) 
+      sleep 1
+      @number_of_sets += 1
     end
   end
   private
@@ -28,12 +30,21 @@ class Game
     @player = gets.chomp    
   end
 
+  def print_result(player_choice, opponent_choice)
+    "#{@player} #{@matrix[opponent_choice][player_choice]}!"
+  end
+
   def space
     puts ""
   end
 
-  def present_choices
+  def get_opponent_choice
+    (rand*2).round
+  end
+  
+  def get_player_choice
     valid_choice = false
+    space
     puts "Make your choice! Quickly!"
     while !valid_choice 
       space         
@@ -51,14 +62,14 @@ class Game
       when "3", "siccor"
         valid_choice = true
         player_choice = 3
-      else puts "common! Make a correct choce ffs! How hard can it be?"
+      else puts "Common! Make a correct choce ffs! How hard can it be?"
       end
     end
     player_choice
   end
 
   def get_referee_matrix
-    t = "Tie", w = "Win"; l="lose"
+    t = "Tie"; w = "Win"; l="lose"
     @matrix = [[t,w,l],[l,t,w],[w,l,t]]
   end
 
