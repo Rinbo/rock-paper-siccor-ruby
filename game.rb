@@ -3,8 +3,7 @@ require 'yaml'
 
 class Game
   def initialize
-    @number_of_sets = 0 
-    @streak = 0  
+    @number_of_sets = 0    
     @hand = ["Rock", "Paper", "Sciccor"]
     load_high_score
     initizalize_player
@@ -35,7 +34,8 @@ class Game
     end
     pause
     final_score
-    space; pause
+    space
+    pause
     if streak_record?
       puts "You achieved a new streak record! #{@streak} wins in a row!".green
       save_record
@@ -137,23 +137,37 @@ class Game
   end
 
   def streak_logger(result)
-    result == "win" ? @streak += 1 : @streak = 0    
-  endload_high_score
-
+    @streak_array.push(result)    
+  end
+  
   def streak_record?
+    temp_array = 0
+    @streak_array.each_with_index do |e, i|
+      if e == "win" && @streak_array[i+1] == "win"
+        temp_array = 1 if temp_array == 0
+        temp_array += 1
+        @streak = temp_array if temp_array > @streak
+      else
+        # @streak = temp_array if temp_array > @streak
+        temp_array = 0 
+      end
+    end
+    @streak = temp_array if temp_array > @streak
     return @streak > @high_score[0][:score]
   end
 
   def load_high_score
+    @streak = 0
+    @streak_array = []
     @high_score = YAML.load_file('./high_score.yml')
   end
 
   def save_record
-    @highscore.each do |hash|
+    @high_score.each do |hash|
       hash[:rank] += 1
     end
     @high_score.unshift({name: @player, score: @streak, rank: 1})
-    File.open("./high_score.yml", "r") { |file| file.write(@high_score.to_yaml) }
+    File.open("./high_score.yml", "w") { |file| file.write(@high_score.to_yaml) }
   end  
 
   def clear_screen
@@ -161,7 +175,7 @@ class Game
   end
   
   def pause
-    sleep 0
+    sleep 1
   end
   
 end
