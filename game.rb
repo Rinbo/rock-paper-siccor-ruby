@@ -11,18 +11,23 @@ class Game
   end
 
   def start_game
-    puts "Your opponent will be #{@opponent}!"
+    clear_screen
+    puts "Your opponent will be #{@opponent.cyan}!"
     sleep 1
     puts "Game starts in "
-    countdown(1)
+    countdown(2)
     while (@number_of_sets < 10) do
+      puts `clear`
+      puts "Round #{@number_of_sets +1}"
+      puts "#{@player.green}: #{@player_score} - #{@opponent.blue}: #{@opponent_score}"
+      space
       player_choice = get_player_choice
       opponent_choice = get_opponent_choice
       puts print_result(player_choice, opponent_choice)
       space
       sleep 1
       print_score
-      sleep 1
+      sleep 2
       @number_of_sets += 1
     end
     sleep 1
@@ -56,7 +61,7 @@ class Game
   end
 
   def get_opponent_choice
-    (rand*2).round
+    rand(0..2)
   end
   
   def get_player_choice
@@ -79,7 +84,7 @@ class Game
       when "3", "siccor"
         valid_choice = true
         player_choice = 2
-      else puts "Common! Make a correct choce ffs! How hard can it be?"
+      else puts "Common! Make a correct choce ffs! How hard can it be?".red
       end
     end
     player_choice
@@ -116,10 +121,14 @@ class Game
     if @player_score > @opponent_score
       puts "#{@player} wins!".green
     elsif @player_score < @opponent_score
-      puts "#{@opponent} wins!"
+      puts "#{@opponent} wins!".red
     else
       puts "The game ended in a tie".yellow
     end
+  end
+
+  def clear_screen
+    puts `clear`
   end
 
 end
