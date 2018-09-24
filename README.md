@@ -1,5 +1,6 @@
 ## Rock Paper Siccor game
 #### 2018-09-24
+#### Robin Börjesson
 
 - Clone repo and start a game by typing `ruby rps.rb` into your terminal at root level.
 - Upon starting the game press `1` for rules, `2` to start a new game, `3` to view high scores and `4` to quit
