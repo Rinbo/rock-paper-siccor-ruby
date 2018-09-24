@@ -1,9 +1,12 @@
 require 'colorize'
+require 'yaml'
 
 class Game
   def initialize
-    @number_of_sets = 0
+    @number_of_sets = 0 
+    @streak = 0  
     @hand = ["Rock", "Paper", "Sciccor"]
+    load_high_score
     initizalize_player
     get_referee_matrix
     select_opponent
@@ -13,7 +16,7 @@ class Game
   def start_game
     clear_screen
     puts "Your opponent will be #{@opponent.cyan}!"
-    sleep 1
+    pause
     puts "Game starts in "
     countdown(2)
     while (@number_of_sets < 10) do
@@ -23,15 +26,20 @@ class Game
       space
       player_choice = get_player_choice
       opponent_choice = get_opponent_choice
-      puts print_result(player_choice, opponent_choice)
+      print_result(player_choice, opponent_choice)
       space
-      sleep 1
+      pause
       print_score
-      sleep 2
+      pause
       @number_of_sets += 1
     end
-    sleep 1
+    pause
     final_score
+    space; pause
+    if streak_record?
+      puts "You achieved a new streak record! #{@streak} wins in a row!".green
+      save_record
+    end
     sleep 1
   end
   private
@@ -45,11 +53,12 @@ class Game
 
   def print_result(player_choice, opponent_choice)
     result = @matrix[opponent_choice][player_choice]
+    streak_logger(result)
     @player_score += 1 if result == "win"
     @opponent_score += 1 if result == "lose"
     puts "#{@opponent} reveals #{@hand[opponent_choice].cyan}"
-    sleep 1
-    return case result
+    pause
+    puts case result
     when "lose" then "#{@opponent.blue} wins!" 
     when "tie" then  "The set ended in a tie".yellow
     when "win" then "#{@player.green} wins!"
@@ -98,7 +107,7 @@ class Game
   def countdown(sec)    
     sec.times do      
       print sec.to_s+"\r"  
-      sleep 1
+      pause
       $stdout.flush
       sec -= 1      
     end
@@ -106,7 +115,7 @@ class Game
 
   def select_opponent
     opponents = ["Benny the Butcher", "Gerry the Greek", "Ronny the Ruler", "Thormorthur the Viking"]
-    @opponent = opponents[(rand*3).to_i]
+    @opponent = opponents[rand(0..2)]
     @opponent_score = 0
   end
 
@@ -127,8 +136,32 @@ class Game
     end
   end
 
+  def streak_logger(result)
+    result == "win" ? @streak += 1 : @streak = 0    
+  endload_high_score
+
+  def streak_record?
+    return @streak > @high_score[0][:score]
+  end
+
+  def load_high_score
+    @high_score = YAML.load_file('./high_score.yml')
+  end
+
+  def save_record
+    @highscore.each do |hash|
+      hash[:rank] += 1
+    end
+    @high_score.unshift({name: @player, score: @streak, rank: 1})
+    File.open("./high_score.yml", "r") { |file| file.write(@high_score.to_yaml) }
+  end  
+
   def clear_screen
     puts `clear`
   end
-
+  
+  def pause
+    sleep 0
+  end
+  
 end
